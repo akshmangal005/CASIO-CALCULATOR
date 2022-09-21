@@ -3,11 +3,9 @@ package com.example.casio;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -17,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView btn_dot,btn_equal,btn_ac,btn_module,btn_multiply,btn_minus,btn_plus,btn_divide;
     TextView input,output;
     String data;
+    int cnt_dot=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
                 input.setText(data+"5");
             }
         });
+        btn_5.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                input.setText("Jai Mata Di");
+                return false;
+            }
+        });
 
         btn_6.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 data = input.getText().toString();
                 int len = data.length();
+//                int dot_check=0;
+//                dot_check=data.indexOf('.');
                 if(len>0)
                     if(data.charAt(len-1)=='/' || data.charAt(len-1)=='×'|| data.charAt(len-1)=='%' || data.charAt(len-1)=='+'|| data.charAt(len-1)=='-'||data.charAt(len-1)=='.')
                         input.setText(data.substring(0,len-1)+".");
@@ -216,11 +224,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 data = input.getText().toString();
                 int len = data.length();
-                if(len==0)
-                    input.setText("");
+//                if(len<1)
+//                    input.setText(data);
+//
                 if (len==1)
                     input.setText(data);
-                if (len>1 && (data.charAt(len - 1) != '/' && data.charAt(len - 1) != '×'  && data.charAt(len - 1) != '+' && data.charAt(len - 1) != '-'&&data.charAt(len-1)!='.')||data.charAt(len-1)=='%') {
+                if(len>1)
+                if ((data.charAt(len - 1) != '/' && data.charAt(len - 1) != '×'  && data.charAt(len - 1) != '+' && data.charAt(len - 1) != '-'&&data.charAt(len-1)!='.')||data.charAt(len-1)=='%') {
                     data = data.replaceAll("×", "*");
                     data = data.replaceAll("%", "/100");
                     data = data.replaceAll("/", "/");
@@ -233,11 +243,11 @@ public class MainActivity extends AppCompatActivity {
                     Scriptable scriptable = rhino.initStandardObjects();
                     finalResult = rhino.evaluateString(scriptable, data, "Javsscript", 1, null).toString();
                     input.setText((finalResult));
-                    int decimal_check = finalResult.length();
-                    if(finalResult.charAt(decimal_check-1)!='0')
+                    int decimal_index = finalResult.length();
+                    if(finalResult.charAt(decimal_index-1)!='0')
                         input.setText(finalResult);
                     else
-                        input.setText(finalResult.substring(0,decimal_check-2));
+                        input.setText(finalResult.substring(0,decimal_index-2));
                 }
             }
         });
@@ -254,7 +264,8 @@ public class MainActivity extends AppCompatActivity {
     public void sign(View view) {
         String word = input.getText().toString();
         int len = word.length();
-        if(word.charAt(0)=='-')
+        if(len>0)
+        if(word.charAt(0)=='-' )
             input.setText(word.substring(1,len));
         else
             input.setText("-"+word.substring(0,len));
